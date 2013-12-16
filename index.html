@@ -1,9 +1,163 @@
 <html>
-<body>
-<h1>Yeah!</h1>
+    <head>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<style>
 
-<p>
-Sweet!
-</p>
+ul.answerList {
+	list-style: none;
+
+}
+
+    ul.answerList li {
+        display: inline;
+    }
+    ul.answerList li div {
+        width: 100px;
+        height: 100px;
+        float: left;
+        margin-right: 10px;
+    
+        }
+
+    #game {
+        display: none;
+    }
+
+.answer1 
+{
+	background-color: green;
+}
+.answer2
+{
+	background-color: red;
+}
+.answer3 
+{
+	background-color: blue;
+}
+.answer4 
+{
+	background-color: orange;
+}
+
+    #gamescreen {
+        float: left;
+        width: 300px;
+        height: 200px;
+        clear:both;
+        margin: 10px;
+
+    }
+
+    #gameoptions {
+        clear: both;
+    }
+
+    .answermsg {
+        display: none;
+        font-size: 50px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    #gamePlayer {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+</style>
+    </head>
+<body>
+
+<div id="gameOptions">
+	What's your name? <input type="text" value="Player 1" name="playername" id="playername" placeholder="Your name" />
+    <div>
+        <a id="startGame" href="#">Start!</a>
+    </div>
+</div>
+
+<div id="answerStatus">
+
+</div>
+
+<div id="game">
+    <div id="gamePlayer"></div>
+	<div id="gamescreen" answerid="0">
+	    <div id="correct" class="answermsg">
+            Yes!
+        </div>
+        <div id="incorrect" class="answermsg">
+            Oops!
+        </div>
+        <div id="start" class="answermsg">
+            Go!
+        </div>
+	</div>
+
+	<div id="gameoptions">
+	<span>Which color is showing in the big box?</span>
+		<ul class="answerList">
+			<li><div class="answer1 clickableAnswer" answerid="1">&nbsp;</div></li>
+			<li><div class="answer2 clickableAnswer" answerid="2">&nbsp;</div></li>
+			<li><div class="answer3 clickableAnswer" answerid="3">&nbsp;</div></li>
+			<li><div class="answer4 clickableAnswer" answerid="4">&nbsp;</div></li>
+		</ul>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+
+     gameControl = (function () {
+
+         var currentAnswer = 0;
+
+         init = function () {
+             $('a#startGame').click(function (e) {
+                 e.preventDefault();
+                 $('#gameOptions').hide();
+                 var playerName = $('input#playername').val();
+                 $('#gamePlayer').html(playerName);
+                 $('#game').show();
+                 newSlide();
+                 showAnswerResponse("start");
+             });
+
+             $('div.clickableAnswer').click(function (e) {
+                 var aid = $(this).attr('answerid');
+                 console.log(aid);
+                 console.log(currentAnswer);
+
+                 if (aid == currentAnswer) {
+                     showAnswerResponse("correct");
+                     newSlide();
+                 } else {
+                     showAnswerResponse("incorrect");
+                 }
+             });
+         }
+
+         showAnswerResponse = function (type) {
+             $('#' + type).show().fadeOut("slow");
+         }
+
+         newSlide = function () {
+             var newAid = Math.floor((Math.random() * 4) + 1);
+             $('#gamescreen').removeClass('answer' + currentAnswer);
+             currentAnswer = newAid;
+             $('#gamescreen').addClass('answer' + currentAnswer);
+         }
+
+         return {
+             init: init
+         }
+
+
+    })();
+
+     gameControl.init();
+
+</script>
+
 </body>
 </html>
