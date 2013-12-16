@@ -51,6 +51,7 @@ ul.answerList {
 
     #gameoptions {
         clear: both;
+        margin: 0px;
     }
 
     .answermsg {
@@ -82,6 +83,7 @@ ul.answerList {
 
 <div id="game">
     <div id="gamePlayer"></div>
+    <div id="gameScore">0</div>
 	<div id="gamescreen" answerid="0">
 	    <div id="correct" class="answermsg">
             Yes!
@@ -111,6 +113,9 @@ ul.answerList {
      gameControl = (function () {
 
          var currentAnswer = 0;
+         var score = 0;
+         var startTime = new Date();
+         var endTime = new Date();
 
          init = function () {
              $('a#startGame').click(function (e) {
@@ -124,17 +129,32 @@ ul.answerList {
              });
 
              $('div.clickableAnswer').click(function (e) {
+                 endTime = new Date();
                  var aid = $(this).attr('answerid');
-                 console.log(aid);
-                 console.log(currentAnswer);
 
                  if (aid == currentAnswer) {
                      showAnswerResponse("correct");
+                     calculateScore();
                      newSlide();
                  } else {
                      showAnswerResponse("incorrect");
                  }
              });
+         }
+
+         calculateScore = function () {
+             var result = endTime.getTime() - startTime.getTime();
+             var addScore = 0;
+
+             if (result < 2000) { addScore = 100; }
+             else {
+                 addScore = 100 - parseInt((result - 2000) / 10);
+             }
+
+             if (addScore < 40) { addScore = 40; }
+
+             score = score + addScore;
+             $('#gameScore').html(score);
          }
 
          showAnswerResponse = function (type) {
@@ -146,6 +166,7 @@ ul.answerList {
              $('#gamescreen').removeClass('answer' + currentAnswer);
              currentAnswer = newAid;
              $('#gamescreen').addClass('answer' + currentAnswer);
+             startTime = new Date();
          }
 
          return {
