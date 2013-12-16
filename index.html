@@ -162,9 +162,15 @@ ul.answerList {
          }
 
          newSlide = function () {
-             var newAid = Math.floor((Math.random() * 4) + 1);
              $('#gamescreen').removeClass('answer' + currentAnswer);
-             currentAnswer = newAid;
+
+             while (true) {
+                 var newAid = Math.floor((Math.random() * 4) + 1);
+                 if (newAid != currentAnswer) {
+                     currentAnswer = newAid;
+                     break;
+                 }
+             }
              $('#gamescreen').addClass('answer' + currentAnswer);
              startTime = new Date();
          }
