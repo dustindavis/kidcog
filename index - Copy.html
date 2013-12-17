@@ -79,28 +79,9 @@ ul.answerList {
         margin-bottom: 10px;
     }
 
-    div#bg {
-        width: 400px;
-        height: 100px;
-        background-image: url(/images/bg1.png);
-        background-position: 0px 0px;
-        overflow: hidden;
-    }
-
-    div.en {
-        width: 50px;
-        height: 50px;
-        top: 50px;
-        position: relative;
-        float: left;
-    }
-
 </style>
     </head>
 <body>
-
-<div id="bg">
-</div>
 
 <div id="gameOptions">
 	What's your name?<br /> <input type="text" value="Player 1" name="playername" id="playername" placeholder="Your name" /><br />
@@ -139,67 +120,6 @@ ul.answerList {
 </div>
 
 <script type="text/javascript">
-
-    var bg = $('div#bg');
-
-    var curX = 0;
-
-    function scroll() {
-        curX = curX - 1;
-        bg.css('background-position-x', curX + 'px');
-        setTimeout(scroll, 100);
-    }
-
-    $(document).ready(function () {
-        var en1 = new char('/images/en1.png', 350, 1, 'en1');
-        var en2 = new char('/images/en2.png', 450, 1, 'en2');
-        en1.init();
-        en2.init();
-
-        setTimeout(scroll, 1000);
-
-    });
-
-    function char(sprite, start, diff, el) {
-        this.sprite = sprite;
-        this.start = start;
-        this.diff = diff;
-        this.state = 1;
-        this.elName = el;
-
-        this.currentX = start;
-
-        var _self = this;
-
-        this.init = function () {
-            
-            $('div#bg').append('<div id="' + _self.elName + '" class="en"></div>');
-            var el = $('div#' + _self.elName);
-            
-            el.css('background-image', 'url(' + sprite + ')');
-            el.css('background-position', '0px 0px');
-            el.css('left', _self.start + 'px');
-            _self.el = el;
-            
-            _self.scroll();
-        }
-
-        this.scroll = function() {
-            var en1X = _self.currentX - 1;
-            var el = _self.el;
-            
-            el.css('left', en1X + 'px');
-            if (_self.state == 1) {
-                el.css('background-position', '0px 0px');
-                _self.state = 2;
-            } else {
-                el.css('background-position', '0px 50px');
-                _self.state = 1;
-            }
-            _self.currentX = en1X;
-            setTimeout(_self.scroll, 200);
-        }
-    }
 
      gameControl = (function () {
 
