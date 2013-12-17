@@ -82,8 +82,8 @@ ul.answerList {
     div#bg {
         width: 400px;
         height: 100px;
-        background-image: url(/images/bg1.png);
-        background-position: 0px 0px;
+        /*background-image: url(/images/bg1.png);
+        background-position: 0px 0px;*/
         overflow: hidden;
     }
 
@@ -140,25 +140,49 @@ ul.answerList {
 
 <script type="text/javascript">
 
-    var bg = $('div#bg');
+    
 
-    var curX = 0;
-
-    function scroll() {
-        curX = curX - 1;
-        bg.css('background-position-x', curX + 'px');
-        setTimeout(scroll, 100);
-    }
 
     $(document).ready(function () {
+        var scene1 = new scene('/images/bg1.png', 1);
         var en1 = new char('/images/en1.png', 350, 1, 'en1');
         var en2 = new char('/images/en2.png', 450, 1, 'en2');
+
+        scene1.init();
         en1.init();
         en2.init();
 
-        setTimeout(scroll, 1000);
+        scene1.start();
+        en1.start();
+        en2.start();
 
     });
+
+    function scene(sprite, speed) {
+        
+        this.speed = speed;
+        this.currentX = 0;
+
+        var _self = this;
+
+        this.init = function () {
+            var el = $('div#bg');
+            el.css('background-image', 'url(' + sprite + ')');
+            el.css('background-position', '0px 0px');
+            _self.el = el;
+        }
+
+        this.start = function () {
+            _self.scroll();
+        }
+
+        this.scroll = function () {
+            var curX = _self.currentX - _self.speed;
+            _self.el.css('background-position-x', curX + 'px');
+            _self.currentX = curX;
+            setTimeout(_self.scroll, 100);
+        }
+    }
 
     function char(sprite, start, diff, el) {
         this.sprite = sprite;
@@ -169,18 +193,28 @@ ul.answerList {
 
         this.currentX = start;
 
+        this.states = {
+            1 : { 'background-position' : '0px 0px' },
+            2 : { 'background-position' : '0px 50px' },
+        };
+
         var _self = this;
 
         this.init = function () {
             
             $('div#bg').append('<div id="' + _self.elName + '" class="en"></div>');
             var el = $('div#' + _self.elName);
+
+            el.css({
+                'background-image' : 'url(' + sprite + ')',
+                'background-position' : '0px 0px',
+                'left' : _self.start + 'px' 
+            });
             
-            el.css('background-image', 'url(' + sprite + ')');
-            el.css('background-position', '0px 0px');
-            el.css('left', _self.start + 'px');
             _self.el = el;
-            
+        }
+
+        this.start = function () {
             _self.scroll();
         }
 
@@ -189,16 +223,18 @@ ul.answerList {
             var el = _self.el;
             
             el.css('left', en1X + 'px');
-            if (_self.state == 1) {
-                el.css('background-position', '0px 0px');
-                _self.state = 2;
-            } else {
-                el.css('background-position', '0px 50px');
-                _self.state = 1;
+            el.css(_self.states[_self.state]);
+
+            switch (_self.state) {
+                case 1: { _self.state = 2; break; }
+                case 2: { _self.state = 1; break; }
             }
+            
             _self.currentX = en1X;
             setTimeout(_self.scroll, 200);
         }
+
+        
     }
 
      gameControl = (function () {
