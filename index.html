@@ -85,6 +85,7 @@ ul.answerList {
         /*background-image: url(/images/bg1.png);
         background-position: 0px 0px;*/
         overflow: hidden;
+        float: left;
     }
 
     div.en {
@@ -176,17 +177,119 @@ ul.answerList {
         this.state = 1;
         this.elName = el;
         this.stopCallback = stopCallback;
+        this.life = diff;
 
         this.currentX = start;
 
-        this.states = {
-            1 : { 'background-position' : '0px 0px' },
-            2: { 'background-position': '0px 50px' },
-            90: { 'background-position': '0px 50px' },
-            99: { 'background-position' : '50px 50px' }
-        };
+        function state_Walking(ch) {
 
+            this.char = ch;
+            this.state = 1;
+            var _self = this;
+
+            this.states = {
+                1: { 'background-position': '0px 0px' },
+                2: { 'background-position': '0px 50px' }
+            };
+
+            function animate() {
+                var ch = _self.char;
+                var en1X = ch.currentX;
+                
+                if (en1X <= 150) {
+                    ch.changeState(2); //attacking
+                }
+
+                var el = ch.el;
+
+                if (_self.speed != 0) {
+                    en1X = en1X - ch.speed;
+                    el.css('left', en1X + 'px');
+                }
+
+                el.css(_self.states[_self.state]);
+
+                switch (_self.state) {
+                    case 1: { _self.state = 2; break; }
+                    case 2: { _self.state = 1; break; }
+                }
+
+                ch.currentX = en1X;
+            }
+
+            return { animate: animate }
+        }
+
+        function state_Attacking(ch) {
+
+            this.char = ch;
+            this.state = 1;
+            this.hasAttacked = false;
+            var _self = this;
+
+            this.states = {
+                1: { 'background-position': '0px 0px' },
+                2: { 'background-position': '0px 50px' }
+            };
+
+            function animate() {
+                var ch = _self.char;
+                ch.el.css(_self.states[_self.state]);
+
+                if (_self.hasAttacked === false) {
+                    _self.hasAttacked = true;
+                    if (ch.stopCallback != null) {
+                        ch.stopCallback(ch);
+                    }
+                }
+
+                switch (_self.state) {
+                    case 1: { _self.state = 2; break; }
+                    case 2: { _self.state = 1; break; }
+                }
+            }
+
+            return { animate: animate }
+
+
+        }
+
+        function state_Dead(ch) {
+
+            this.char = ch;
+            var _self = this;
+
+            this.states = {
+                1: { 'background-position': '100px 100px' },
+            };
+
+            function animate() {
+                var ch = _self.char;
+                var en1X = ch.currentX;
+
+                var el = ch.el;
+
+                if (ch.speed) {
+                    en1X = en1X - ch.speed;
+                    el.css('left', en1X + 'px');
+                }
+
+                el.css(_self.states[_self.state]);
+
+                ch.currentX = en1X;
+            }
+
+            return { animate: animate }
+
+        }
+
+      
         var _self = this;
+
+        var _stateWalk = new state_Walking(_self);
+        var _stateAttack = new state_Attacking(_self);
+        var _stateDead = new state_Dead(_self);
+
 
         this.init = function () {
             
@@ -200,37 +303,67 @@ ul.answerList {
             });
             
             _self.el = el;
+
+            _self.currentState = _stateWalk;
+
         }
 
         this.start = function () {
             _self.scroll();
         }
 
+        this.changeState = function(state) {
+            switch(state) {
+                case 1: { _self.currentState = _stateWalk; break; }
+                case 2: { _self.currentState = _stateAttack; break; }
+                case 3: { _self.currentState = _stateDead; break; }
+            }
+        }
+
         this.scroll = function() {
-            var en1X = _self.currentX;
+            //var en1X = _self.currentX;
 
-            if (en1X <= 250 && _self.state != 90) {
-                _self.state = 90;
-                _self.stopCallback(_self);
-            }
+            //if (en1X <= 150 && _self.state != 90 && _self.state != 99) {
+            //    _self.state = 90;
+            //    if (_self.stopCallback != null) {
+            //        _self.stopCallback(_self);
+            //    }
+            //}
 
-            en1X = en1X - _self.speed;
-            var el = _self.el;
+            //var el = _self.el;
+
+            //if (_self.speed != 0 && _self.state != 90) {
+            //    en1X = en1X - _self.speed;
+            //    el.css('left', en1X + 'px');
+            //}
+
+            //el.css(_self.states[_self.state]);
+
+            //switch (_self.state) {
+            //    case 1: { _self.state = 2; break; }
+            //    case 2: { _self.state = 1; break; }
+            //}
             
-            el.css('left', en1X + 'px');
-            el.css(_self.states[_self.state]);
-
-            switch (_self.state) {
-                case 1: { _self.state = 2; break; }
-                case 2: { _self.state = 1; break; }
-            }
-            
-            _self.currentX = en1X;
+            //_self.currentX = en1X;
+            _self.currentState.animate();
             setTimeout(_self.scroll, 200);
         }
 
         this.kill = function () {
-            _self.state = 99;
+            _Self.changeState(3);
+            console.log('killed');
+        }
+
+        this.attack = function () {
+            _self.currentState = _stateAttack;
+        }
+
+        this.hit = function () {
+            var life = _self.life - 1;
+
+            if (life <= 0) { _self.kill(); }
+            
+            _self.life = life;
         }
         
     }
@@ -242,6 +375,8 @@ ul.answerList {
          var startTime = new Date();
          var endTime = new Date();
 
+         var _self = this;
+
          init = function () {
              $('a#startGame').click(function (e) {
                  e.preventDefault();
@@ -251,9 +386,9 @@ ul.answerList {
                  $('#game').show();
                  showAnswerResponse("start");
 
-                 scene1.start();
-                 en1.start();
-                 en2.start();
+                 for (var i = 0; i < allItems.length; i++) {
+                     allItems[i].start();
+                 }
 
              });
 
@@ -264,9 +399,15 @@ ul.answerList {
                  if (aid == currentAnswer) {
                      showAnswerResponse("correct");
                      calculateScore();
-                     newSlide();
+                     _self.currentEn.hit();
+                     if (_self.currentEn.diff > 0) {
+                         newSlide(_self.currentEn);
+                     } else {
+                         _self.currentEn.kill();
+                     }
                  } else {
                      showAnswerResponse("incorrect");
+                     //TODO: Hurt player
                  }
              });
          }
@@ -290,7 +431,11 @@ ul.answerList {
              $('#' + type).show().fadeOut("slow");
          }
 
+         
          newSlide = function (en) {
+
+             _self.currentEn = en;
+
              $('#gamescreen').removeClass('answer' + currentAnswer);
 
              while (true) {
@@ -314,13 +459,16 @@ ul.answerList {
      var scene1 = new scene('/images/bg1.png', 1);
      var en1 = new char('/images/en1.png', 350, 5, 1, 'en1', gameControl.newSlide);
      var en2 = new char('/images/en2.png', 450, 5, 1, 'en2', gameControl.newSlide);
+     var en3 = new char('/images/en1.png', -100, 0, 3, 'en3', null);
+
+     var allItems = [scene1, en1, en2, en3];
 
      $(document).ready(function () {
          gameControl.init();
 
-         scene1.init();
-         en1.init();
-         en2.init();
+         for (var i = 0; i < allItems.length; i++) {
+             allItems[i].init();
+         }
 
      });
 
