@@ -157,9 +157,9 @@ ul.answerList {
              var result = endTime.getTime() - startTime.getTime();
              var addScore = 0;
 
-             if (result < 2000) { addScore = 100; }
+             if (result < 1500) { addScore = 100; }
              else {
-                 addScore = 100 - parseInt((result - 2000) / 10);
+                 addScore = 100 - parseInt((result - 1500) / 10);
              }
 
              if (addScore < 40) { addScore = 40; }
