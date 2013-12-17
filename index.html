@@ -13,8 +13,8 @@ ul.answerList {
         display: inline;
     }
     ul.answerList li div {
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
         float: left;
         margin: 10px;
     
@@ -43,8 +43,8 @@ ul.answerList {
 
     #gamescreen {
         float: left;
-        width: 300px;
-        height: 200px;
+        width: 200px;
+        height: 150px;
         clear:both;
         margin: 10px;
 
@@ -99,8 +99,7 @@ ul.answerList {
     </head>
 <body>
 
-<div id="bg">
-</div>
+
 
 <div id="gameOptions">
 	What's your name?<br /> <input type="text" value="Player 1" name="playername" id="playername" placeholder="Your name" /><br />
@@ -114,6 +113,9 @@ ul.answerList {
 <div id="game">
     <div id="gamePlayer"></div>
     <div id="gameScore">0</div>
+    
+    <div id="bg"></div>
+
 	<div id="gamescreen" answerid="0">
 	    <div id="correct" class="answermsg">
             Yes!
@@ -139,25 +141,7 @@ ul.answerList {
 </div>
 
 <script type="text/javascript">
-
     
-
-
-    $(document).ready(function () {
-        var scene1 = new scene('/images/bg1.png', 1);
-        var en1 = new char('/images/en1.png', 350, 1, 'en1');
-        var en2 = new char('/images/en2.png', 450, 1, 'en2');
-
-        scene1.init();
-        en1.init();
-        en2.init();
-
-        scene1.start();
-        en1.start();
-        en2.start();
-
-    });
-
     function scene(sprite, speed) {
         
         this.speed = speed;
@@ -184,18 +168,22 @@ ul.answerList {
         }
     }
 
-    function char(sprite, start, diff, el) {
+    function char(sprite, start, speed, diff, el, stopCallback) {
         this.sprite = sprite;
+        this.speed = speed;
         this.start = start;
         this.diff = diff;
         this.state = 1;
         this.elName = el;
+        this.stopCallback = stopCallback;
 
         this.currentX = start;
 
         this.states = {
             1 : { 'background-position' : '0px 0px' },
-            2 : { 'background-position' : '0px 50px' },
+            2: { 'background-position': '0px 50px' },
+            90: { 'background-position': '0px 50px' },
+            99: { 'background-position' : '50px 50px' }
         };
 
         var _self = this;
@@ -219,7 +207,14 @@ ul.answerList {
         }
 
         this.scroll = function() {
-            var en1X = _self.currentX - 1;
+            var en1X = _self.currentX;
+
+            if (en1X <= 250 && _self.state != 90) {
+                _self.state = 90;
+                _self.stopCallback(_self);
+            }
+
+            en1X = en1X - _self.speed;
             var el = _self.el;
             
             el.css('left', en1X + 'px');
@@ -234,6 +229,9 @@ ul.answerList {
             setTimeout(_self.scroll, 200);
         }
 
+        this.kill = function () {
+            _self.state = 99;
+        }
         
     }
 
@@ -251,8 +249,12 @@ ul.answerList {
                  var playerName = $('input#playername').val();
                  $('#gamePlayer').html(playerName);
                  $('#game').show();
-                 newSlide();
                  showAnswerResponse("start");
+
+                 scene1.start();
+                 en1.start();
+                 en2.start();
+
              });
 
              $('div.clickableAnswer').click(function (e) {
@@ -288,7 +290,7 @@ ul.answerList {
              $('#' + type).show().fadeOut("slow");
          }
 
-         newSlide = function () {
+         newSlide = function (en) {
              $('#gamescreen').removeClass('answer' + currentAnswer);
 
              while (true) {
@@ -303,13 +305,24 @@ ul.answerList {
          }
 
          return {
-             init: init
+             init: init,
+             newSlide: newSlide
          }
-
 
     })();
 
-     gameControl.init();
+     var scene1 = new scene('/images/bg1.png', 1);
+     var en1 = new char('/images/en1.png', 350, 5, 1, 'en1', gameControl.newSlide);
+     var en2 = new char('/images/en2.png', 450, 5, 1, 'en2', gameControl.newSlide);
+
+     $(document).ready(function () {
+         gameControl.init();
+
+         scene1.init();
+         en1.init();
+         en2.init();
+
+     });
 
 </script>
 
