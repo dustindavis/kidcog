@@ -1,478 +1,215 @@
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-<style>
-
-ul.answerList {
-	list-style: none;
-
-}
-
-    ul.answerList li {
-        display: inline;
-    }
-    ul.answerList li div {
-        width: 70px;
-        height: 70px;
-        float: left;
-        margin: 10px;
-    
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="scene.js"></script>
+    <script type="text/javascript" src="sprite_defs.js"></script>
+    <script type="text/javascript" src="charactor.js"></script>
+    <style>
+        ul.answerList {
+            list-style: none;
         }
 
-    #game {
-        display: none;
-    }
+        #question {
+            display: none;
+        }
 
-.answer1 
-{
-	background-color: green;
-}
-.answer2
-{
-	background-color: red;
-}
-.answer3 
-{
-	background-color: blue;
-}
-.answer4 
-{
-	background-color: orange;
-}
+        ul.answerList li {
+            display: inline;
+        }
 
-    #gamescreen {
-        float: left;
-        width: 200px;
-        height: 150px;
-        clear:both;
-        margin: 10px;
+            ul.answerList li div {
+                width: 70px;
+                height: 70px;
+                float: left;
+                margin: 10px;
+            }
 
-    }
+        #game {
+            display: none;
+        }
 
-    #gameoptions {
-        clear: both;
-        margin: 0px;
-    }
 
-    .answermsg {
-        display: none;
-        font-size: 50px;
-        text-align: center;
-        vertical-align: middle;
-    }
+        .answer1 {
+            background-color: green;
+        }
 
-    #gamePlayer {
-        font-size: 16px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+        .answer2 {
+            background-color: red;
+        }
 
-     a#startGame {
-        font-size: 26px;
-        margin-top: 10px;
-        text-align: center;
-    }
+        .answer3 {
+            background-color: blue;
+        }
 
-    input#playername {
-        font-size: 20px;
-        margin-bottom: 10px;
-    }
+        .answer4 {
+            background-color: orange;
+        }
 
-    div#bg {
-        width: 400px;
-        height: 100px;
-        /*background-image: url(/images/bg1.png);
-        background-position: 0px 0px;*/
-        overflow: hidden;
-        float: left;
-    }
+        #gamescreen {
+            float: left;
+            width: 200px;
+            height: 150px;
+            clear: both;
+            margin: 10px;
+        }
 
-    div.en {
-        width: 50px;
-        height: 50px;
-        top: 50px;
-        position: relative;
-        float: left;
-    }
+        #gameoptions, #gameansweroptions {
+            clear: both;
+            margin: 0px;
+        }
 
-</style>
-    </head>
+
+
+        .answermsg {
+            display: none;
+            font-size: 50px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #gamePlayer {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        a#startGame {
+            font-size: 26px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        input#playername {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        div#bg {
+            width: 400px;
+            height: 100px;
+            overflow: hidden;
+            float: left;
+        }
+
+        .player {
+            width: 65px;
+            height: 100px;
+            left: 150px;
+            position: relative;
+            float: left;
+            background-repeat: no-repeat;
+            z-index: 99;
+        }
+
+        .enemy1 {
+            width: 75px;
+            height: 100px;
+            position: relative;
+            float: left;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
 <body>
 
+    <div id="sprite2"></div>
 
-
-<div id="gameOptions">
-	What's your name?<br /> <input type="text" value="Player 1" name="playername" id="playername" placeholder="Your name" /><br />
+    <div id="gameOptions">
+        What's your name?<br />
+        <input type="text" value="Player 1" name="playername" id="playername" placeholder="Your name" /><br />
         <a id="startGame" href="#">Start!</a>
-</div>
+    </div>
 
-<div id="answerStatus">
+    <div id="answerStatus">
+    </div>
 
-</div>
+    <div id="game">
+        <div id="gamePlayer"></div>
+        <div id="gameScore">0</div>
 
-<div id="game">
-    <div id="gamePlayer"></div>
-    <div id="gameScore">0</div>
-    
-    <div id="bg"></div>
+        <div id="bg"></div>
+        <div id="question">
+            <div id="gamescreen" answerid="0">
+                <div id="correct" class="answermsg">
+                    Yes!
+                </div>
+                <div id="incorrect" class="answermsg">
+                    Oops!
+                </div>
+                <div id="start" class="answermsg">
+                    Go!
+                </div>
+            </div>
 
-	<div id="gamescreen" answerid="0">
-	    <div id="correct" class="answermsg">
-            Yes!
+            <div id="gameansweroptions">
+                <span>Which color is showing in the big box?</span>
+
+                <ul class="answerList">
+                    <li>
+                        <div class="answer1 clickableAnswer" answerid="1">&nbsp;</div>
+                    </li>
+                    <li>
+                        <div class="answer2 clickableAnswer" answerid="2">&nbsp;</div>
+                    </li>
+                    <li>
+                        <div class="answer3 clickableAnswer" answerid="3">&nbsp;</div>
+                    </li>
+                    <li>
+                        <div class="answer4 clickableAnswer" answerid="4">&nbsp;</div>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div id="incorrect" class="answermsg">
-            Oops!
-        </div>
-        <div id="start" class="answermsg">
-            Go!
-        </div>
-	</div>
+    </div>
 
-	<div id="gameoptions">
-	<span>Which color is showing in the big box?</span>
-		<ul class="answerList">
-			<li><div class="answer1 clickableAnswer" answerid="1">&nbsp;</div></li>
-			<li><div class="answer2 clickableAnswer" answerid="2">&nbsp;</div></li>
-			<li><div class="answer3 clickableAnswer" answerid="3">&nbsp;</div></li>
-			<li><div class="answer4 clickableAnswer" answerid="4">&nbsp;</div></li>
-		</ul>
-	</div>
-	
-</div>
+    <script type="text/javascript">
 
-<script type="text/javascript">
-    
-    function scene(sprite, speed) {
-        
-        this.speed = speed;
-        this.currentX = 0;
+        var scene1 = new scene('/images/bg1.png', 2);
+        var player = new char(playerSprite, 200, 0, 3, 'player1', 'player', null);
+        var allItems = [];
+        var enCnt = 0;
 
-        var _self = this;
-
-        this.init = function () {
-            var el = $('div#bg');
-            el.css('background-image', 'url(' + sprite + ')');
-            el.css('background-position', '0px 0px');
-            _self.el = el;
+        for (var i = 1; i < 10; i++) {
+            var en = new char(enemy1Sprite, (350 * i), 5, 1, 'en' + i, 'enemy1', gameControl.newSlide);
+            allItems.push(en);
         }
 
-        this.start = function () {
-            _self.scroll();
-        }
+        gameControl.setCallbacks(
+           function (en) {
+               player.strike();
+               en.kill();
+               // player.walk();
+               gameControl.close();
+               //enCnt = enCnt + 1;
+               //allItems[enCnt].init();
+               //allItems[enCnt].start();
+               
+           },
 
-        this.scroll = function () {
-            var curX = _self.currentX - _self.speed;
-            _self.el.css('background-position-x', curX + 'px');
-            _self.currentX = curX;
-            setTimeout(_self.scroll, 100);
-        }
-    }
+            function (en) {
 
-    function char(sprite, start, speed, diff, el, stopCallback) {
-        this.sprite = sprite;
-        this.speed = speed;
-        this.start = start;
-        this.diff = diff;
-        this.state = 1;
-        this.elName = el;
-        this.stopCallback = stopCallback;
-        this.life = diff;
+            },
 
-        this.currentX = start;
-
-        function state_Walking(ch) {
-
-            this.char = ch;
-            this.state = 1;
-            var _self = this;
-
-            this.states = {
-                1: { 'background-position': '0px 0px' },
-                2: { 'background-position': '0px 50px' }
-            };
-
-            function animate() {
-                var ch = _self.char;
-                var en1X = ch.currentX;
-                
-                if (en1X <= 150) {
-                    ch.changeState(2); //attacking
-                }
-
-                var el = ch.el;
-
-                if (_self.speed != 0) {
-                    en1X = en1X - ch.speed;
-                    el.css('left', en1X + 'px');
-                }
-
-                el.css(_self.states[_self.state]);
-
-                switch (_self.state) {
-                    case 1: { _self.state = 2; break; }
-                    case 2: { _self.state = 1; break; }
-                }
-
-                ch.currentX = en1X;
-            }
-
-            return { animate: animate }
-        }
-
-        function state_Attacking(ch) {
-
-            this.char = ch;
-            this.state = 1;
-            this.hasAttacked = false;
-            var _self = this;
-
-            this.states = {
-                1: { 'background-position': '0px 0px' },
-                2: { 'background-position': '0px 50px' }
-            };
-
-            function animate() {
-                var ch = _self.char;
-                ch.el.css(_self.states[_self.state]);
-
-                if (_self.hasAttacked === false) {
-                    _self.hasAttacked = true;
-                    if (ch.stopCallback != null) {
-                        ch.stopCallback(ch);
-                    }
-                }
-
-                switch (_self.state) {
-                    case 1: { _self.state = 2; break; }
-                    case 2: { _self.state = 1; break; }
-                }
-            }
-
-            return { animate: animate }
-
-
-        }
-
-        function state_Dead(ch) {
-
-            this.char = ch;
-            var _self = this;
-
-            this.states = {
-                1: { 'background-position': '100px 100px' },
-            };
-
-            function animate() {
-                var ch = _self.char;
-                var en1X = ch.currentX;
-
-                var el = ch.el;
-
-                if (ch.speed) {
-                    en1X = en1X - ch.speed;
-                    el.css('left', en1X + 'px');
-                }
-
-                el.css(_self.states[_self.state]);
-
-                ch.currentX = en1X;
-            }
-
-            return { animate: animate }
-
-        }
-
-      
-        var _self = this;
-
-        var _stateWalk = new state_Walking(_self);
-        var _stateAttack = new state_Attacking(_self);
-        var _stateDead = new state_Dead(_self);
-
-
-        this.init = function () {
-            
-            $('div#bg').append('<div id="' + _self.elName + '" class="en"></div>');
-            var el = $('div#' + _self.elName);
-
-            el.css({
-                'background-image' : 'url(' + sprite + ')',
-                'background-position' : '0px 0px',
-                'left' : _self.start + 'px' 
+            function (en) {
+                //player.strike();
             });
-            
-            _self.el = el;
 
-            _self.currentState = _stateWalk;
+        $(document).ready(function () {
+            gameControl.init();
+            scene1.init();
+            player.init();
+            player.start();
+            scene1.start();
 
-        }
-
-        this.start = function () {
-            _self.scroll();
-        }
-
-        this.changeState = function(state) {
-            switch(state) {
-                case 1: { _self.currentState = _stateWalk; break; }
-                case 2: { _self.currentState = _stateAttack; break; }
-                case 3: { _self.currentState = _stateDead; break; }
+            for (var i = 0; i < allItems.length; i++) {
+                allItems[i].init();
             }
-        }
 
-        this.scroll = function() {
-            //var en1X = _self.currentX;
+        });
 
-            //if (en1X <= 150 && _self.state != 90 && _self.state != 99) {
-            //    _self.state = 90;
-            //    if (_self.stopCallback != null) {
-            //        _self.stopCallback(_self);
-            //    }
-            //}
-
-            //var el = _self.el;
-
-            //if (_self.speed != 0 && _self.state != 90) {
-            //    en1X = en1X - _self.speed;
-            //    el.css('left', en1X + 'px');
-            //}
-
-            //el.css(_self.states[_self.state]);
-
-            //switch (_self.state) {
-            //    case 1: { _self.state = 2; break; }
-            //    case 2: { _self.state = 1; break; }
-            //}
-            
-            //_self.currentX = en1X;
-            _self.currentState.animate();
-            setTimeout(_self.scroll, 200);
-        }
-
-        this.kill = function () {
-            _Self.changeState(3);
-            console.log('killed');
-        }
-
-        this.attack = function () {
-            _self.currentState = _stateAttack;
-        }
-
-        this.hit = function () {
-            var life = _self.life - 1;
-
-            if (life <= 0) { _self.kill(); }
-            
-            _self.life = life;
-        }
-        
-    }
-
-     gameControl = (function () {
-
-         var currentAnswer = 0;
-         var score = 0;
-         var startTime = new Date();
-         var endTime = new Date();
-
-         var _self = this;
-
-         init = function () {
-             $('a#startGame').click(function (e) {
-                 e.preventDefault();
-                 $('#gameOptions').hide();
-                 var playerName = $('input#playername').val();
-                 $('#gamePlayer').html(playerName);
-                 $('#game').show();
-                 showAnswerResponse("start");
-
-                 for (var i = 0; i < allItems.length; i++) {
-                     allItems[i].start();
-                 }
-
-             });
-
-             $('div.clickableAnswer').click(function (e) {
-                 endTime = new Date();
-                 var aid = $(this).attr('answerid');
-
-                 if (aid == currentAnswer) {
-                     showAnswerResponse("correct");
-                     calculateScore();
-                     _self.currentEn.hit();
-                     if (_self.currentEn.diff > 0) {
-                         newSlide(_self.currentEn);
-                     } else {
-                         _self.currentEn.kill();
-                     }
-                 } else {
-                     showAnswerResponse("incorrect");
-                     //TODO: Hurt player
-                 }
-             });
-         }
-
-         calculateScore = function () {
-             var result = endTime.getTime() - startTime.getTime();
-             var addScore = 0;
-
-             if (result < 1500) { addScore = 100; }
-             else {
-                 addScore = 100 - parseInt((result - 1500) / 10);
-             }
-
-             if (addScore < 40) { addScore = 40; }
-
-             score = score + addScore;
-             $('#gameScore').html(score);
-         }
-
-         showAnswerResponse = function (type) {
-             $('#' + type).show().fadeOut("slow");
-         }
-
-         
-         newSlide = function (en) {
-
-             _self.currentEn = en;
-
-             $('#gamescreen').removeClass('answer' + currentAnswer);
-
-             while (true) {
-                 var newAid = Math.floor((Math.random() * 4) + 1);
-                 if (newAid != currentAnswer) {
-                     currentAnswer = newAid;
-                     break;
-                 }
-             }
-             $('#gamescreen').addClass('answer' + currentAnswer);
-             startTime = new Date();
-         }
-
-         return {
-             init: init,
-             newSlide: newSlide
-         }
-
-    })();
-
-     var scene1 = new scene('/images/bg1.png', 1);
-     var en1 = new char('/images/en1.png', 350, 5, 1, 'en1', gameControl.newSlide);
-     var en2 = new char('/images/en2.png', 450, 5, 1, 'en2', gameControl.newSlide);
-     var en3 = new char('/images/en1.png', -100, 0, 3, 'en3', null);
-
-     var allItems = [scene1, en1, en2, en3];
-
-     $(document).ready(function () {
-         gameControl.init();
-
-         for (var i = 0; i < allItems.length; i++) {
-             allItems[i].init();
-         }
-
-     });
-
-</script>
+    </script>
 
 </body>
 </html>
